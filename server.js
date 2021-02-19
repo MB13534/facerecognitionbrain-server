@@ -10,17 +10,9 @@ const database = {
   users: [
     {
       id: "1",
-      name: "John",
-      email: "john@gmail.com",
-      password: "cookies",
-      entries: 0,
-      joined: new Date(),
-    },
-    {
-      id: "2",
-      name: "Sally",
-      email: "sally@gmail.com",
-      password: "bananas",
+      name: "Michael",
+      email: "michael.barry.email@gmail.com",
+      password: "$2a$10$gaGpxR3Zpi2JnwxDFM1P..qlVNryULBbY5mUHQ/hOgaU6QOXO7sEq",
       entries: 0,
       joined: new Date(),
     },
@@ -37,18 +29,6 @@ const database = {
 app.get("/", (req, res) => {
   res.send(database.users);
 });
-
-// const passwordCompare = async (hashPassword, userPassword) => {
-//   try {
-//     const match = await bcrypt.compare(userPassword, hashPassword);
-//     if (!match) {
-//       throw new Error("Authentication Error");
-//     }
-//     return match;
-//   } catch (error) {
-//     throw new Error("Caught an error: ", error);
-//   }
-// };
 
 ////SIGN IN
 app.post("/signin", (req, res) => {
@@ -76,16 +56,22 @@ app.post("/signin", (req, res) => {
 app.post("/register", (req, res) => {
   const { email, name, password } = req.body;
 
-  bcrypt.hash(password, null, null, function (err, hash) {
-    database.users.push({
-      id: Number(database.users[database.users.length - 1].id) + 1,
-      name: name,
-      email: email,
-      password: hash,
-      entries: 0,
-      joined: new Date(),
-    });
-    res.json(database.users[database.users.length - 1]);
+  database.users.forEach((user) => {
+    if (email === user.email) {
+      res.json("Username not available");
+    } else {
+      bcrypt.hash(password, null, null, function (err, hash) {
+        database.users.push({
+          id: Number(database.users[database.users.length - 1].id) + 1,
+          name: name,
+          email: email,
+          password: hash,
+          entries: 0,
+          joined: new Date(),
+        });
+        res.json(database.users[database.users.length - 1]);
+      });
+    }
   });
 });
 
