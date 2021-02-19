@@ -9,7 +9,7 @@ app.use(cors());
 const database = {
   users: [
     {
-      id: "123",
+      id: "1",
       name: "John",
       email: "john@gmail.com",
       password: "cookies",
@@ -17,7 +17,7 @@ const database = {
       joined: new Date(),
     },
     {
-      id: "124",
+      id: "2",
       name: "Sally",
       email: "sally@gmail.com",
       password: "bananas",
@@ -38,44 +38,38 @@ app.get("/", (req, res) => {
   res.send(database.users);
 });
 
-const passwordCompare = async (hashPassword, userPassword) => {
-  //load hash from your password DB
-  const match = await bcrypt.compare(
-    userPassword,
-    hashPassword,
-    (error, response) => {
-      if (error) {
-        console.log("THERE IS AN ERROR");
-      }
-    }
-  );
-  return match;
-};
+// const passwordCompare = async (hashPassword, userPassword) => {
+//   try {
+//     const match = await bcrypt.compare(userPassword, hashPassword);
+//     if (!match) {
+//       throw new Error("Authentication Error");
+//     }
+//     return match;
+//   } catch (error) {
+//     throw new Error("Caught an error: ", error);
+//   }
+// };
 
 ////SIGN IN
 app.post("/signin", (req, res) => {
-  let found = false;
   for (let i = 0; i < database.users.length; i++) {
     if (database.users[i].email === req.body.email) {
-      if (passwordCompare(database.users[i].password, req.body.password)) {
-        res.json(database.users[i]);
-        found = true;
-        break;
-      }
+      bcrypt.compare(
+        req.body.password,
+        database.users[i].password,
+        (error, result) => {
+          if (error) {
+            console.log(error);
+          }
+          if (result) {
+            res.json(database.users[i]);
+          } else {
+            res.status(400).json("Incorrect credentials");
+          }
+        }
+      );
     }
   }
-  if (!found) {
-    res.status(400).json("Incorrect credentials");
-  }
-
-  // if (
-  //   req.body.email === database.users[0].email &&
-  //   req.body.password === database.users[0].password
-  // ) {
-  //   res.json("Signing in");
-  // } else {
-  //   res.status(400).json("Incorrect credentials");
-  // }
 });
 ////****
 
@@ -91,9 +85,8 @@ app.post("/register", (req, res) => {
       entries: 0,
       joined: new Date(),
     });
+    res.json(database.users[database.users.length - 1]);
   });
-
-  res.json(database.users[database.users.length - 1]);
 });
 
 app.get("/profile/:id", (req, res) => {
