@@ -8,10 +8,12 @@ const signin = require("./controllers/signin.js");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image.js");
 
+// process.env.NODE_TLX_REJECT_UNAUTHORIZED = 0
+
 const db = knex({
   client: "pg",
   connection: {
-    host: "127.0.0.1",
+    host: "postgresql-encircled-76191",
     user: "postgres",
     password: "Gerbils1",
     database: "smart_brain",
