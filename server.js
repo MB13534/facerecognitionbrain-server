@@ -8,7 +8,7 @@ const signin = require("./controllers/signin.js");
 const profile = require("./controllers/profile");
 const image = require("./controllers/image.js");
 
-// process.env.NODE_TLX_REJECT_UNAUTHORIZED = 0
+process.env.NODE_TLX_REJECT_UNAUTHORIZED = 0;
 
 const db = knex({
   client: "pg",
